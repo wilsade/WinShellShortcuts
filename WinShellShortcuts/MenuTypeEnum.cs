@@ -11,6 +11,7 @@ namespace WinShellShortcuts
   /// </summary>
   public enum MenuTypeEnum
   {
+
     /// <summary>
     /// Diretório
     /// </summary>
