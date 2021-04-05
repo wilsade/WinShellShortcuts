@@ -1,13 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using WinShellShortcuts.RegistryItens;
 
 namespace WinShellShortcuts
@@ -15,7 +12,7 @@ namespace WinShellShortcuts
   /// <summary>
   /// Tela de configuração de menus
   /// </summary>
-  /// <seealso cref="System.Windows.Forms.Form" />
+  /// <seealso cref="Form" />
   public partial class ConfigForm : Form
   {
     RegistryBaseMenuItem _menuWSPackDirectory;
@@ -77,6 +74,7 @@ namespace WinShellShortcuts
     {
       _lstItensGrid = new BindingList<GridItem>();
       Icon = Properties.Resources.ws;
+      Text += $" [{Application.ProductVersion}]";
       CriarMenus();
       CriarItensFixos();
       PopularGrid();
@@ -155,6 +153,10 @@ namespace WinShellShortcuts
           CommandFlags = 0x00000020
         },
         new DirectoryPrompAquiItem(RegistryPaths.DirectoryContextMenusMenuWSPack, "%1", true),
+        new DirectoryExcluirPasta(RegistryPaths.DirectoryContextMenusMenuWSPack, "%V")
+        {
+          CommandFlags = 0x00000020
+        }
       };
 
       // Diretório Background

@@ -4,17 +4,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using WinShellShortcuts.RegistryItens;
 
 namespace WinShellShortcuts
 {
   static class Program
   {
-    static StringBuilder strOutput = new StringBuilder();
+    static readonly StringBuilder strOutput = new StringBuilder();
 
     /// <summary>
     /// The main entry point for the application.
@@ -22,10 +21,7 @@ namespace WinShellShortcuts
     [STAThread]
     static void Main(string[] args)
     {
-      bool createdNew;
-
-      Mutex m = new Mutex(true, "WinShellShortcuts", out createdNew);
-
+      Mutex m = new Mutex(true, "WinShellShortcuts", out bool createdNew);
       if (!createdNew)
       {
         // myApp is already running...
@@ -52,24 +48,6 @@ namespace WinShellShortcuts
         {
           Trace.WriteLine(argsItem.Print());
           ProcessarComando(argsItem);
-          return;
-
-          if (argsItem.CategoriaComando == CategoriaComandoEnum.Handle)
-            ProcessHandle(argsItem);
-
-          else if (argsItem.CategoriaComando == CategoriaComandoEnum.CopiarNome)
-            ProcessarComando(argsItem);
-
-          else
-          {
-            StringBuilder str = new StringBuilder();
-            foreach (var esteItem in args)
-            {
-              str.AppendLine(esteItem);
-            }
-            str.Length -= 2;
-            System.Windows.Forms.Clipboard.SetDataObject(str.ToString(), true);
-          }
         }
         catch (Exception ex)
         {
@@ -228,51 +206,6 @@ namespace WinShellShortcuts
     {
       RegistryBaseMenuItem instance = (RegistryBaseMenuItem)Activator.CreateInstance(item.ClassType);
       instance.Execute(item.Parametro);
-      return;
-
-      // Arquivo, Prompt aqui
-      if (item.TipoComando == TipoComandoEnum.ArquivoPromptAqui)
-      {
-        Process.Start("cmd.exe", "/k");
-        return;
-      }
-
-      // Arquivo, runas, Prompt aqui
-      else if (item.TipoComando == TipoComandoEnum.ArquivoRunasPromptAqui)
-      {
-        string parametros = string.Format("/s /k pushd \"{0}\"", Path.GetDirectoryName(item.Parametro));
-        Process.Start("cmd.exe", parametros);
-        return;
-      }
-
-      Trace.WriteLine("Tipo de comando: " + item.Parametro);
-
-      string strToClipboard = item.Parametro;
-      try
-      {
-        //if (tipoComando == TipoComandoEnum.ArquivoCopiarNomeArquivo || tipoComando == TipoComandoEnum.DiretorioCopiarNomePasta)
-        //{
-        //  var lst = GetItensSelecionadosExplorer(tipoComando);
-        //  Trace.WriteLine("Você tem selecionado:");
-        //  Trace.Write(string.Join("; ", lst));
-        //  Trace.WriteLine(new string('-', 50));
-        //  strToClipboard = string.Join(Environment.NewLine, lst);
-        //}
-      }
-      catch (Exception ex)
-      {
-        Trace.WriteLine("Não consegui saber os arquivos selecionados: " + ex.Message);
-      }
-
-      try
-      {
-        Clipboard.SetText(strToClipboard, TextDataFormat.Text);
-      }
-      catch (Exception ex)
-      {
-        Trace.WriteLine(ex.ToString());
-      }
-
     }
 
     private static void AbrirFormConfiguracao()
